@@ -18,6 +18,7 @@ on:
 
 env:
   SUBGRAPH_EXISTS: 'false'
+  FOUNDRY_PROFILE: ci
 
 jobs:
   codescanning:
