@@ -14,13 +14,43 @@ on:
       TOKEN:
         required: true
       ANVIL_TESTS_PRIVATE_KEY:
-        required: false
+        required: true
+      AIKIDO_SECRET_KEY:
+        required: true
 
 env:
   SUBGRAPH_EXISTS: 'false'
   FOUNDRY_PROFILE: ci
 
 jobs:
+  security:
+    name: Security
+    runs-on: namespace-profile-btp-lite
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: namespacelabs/nscloud-checkout-action@v2
+        with:
+          fetch-depth: 0
+
+      - name: Detect new vulnerabilities
+        uses: AikidoSec/github-actions-workflow@v1.0.13
+        continue-on-error: true
+        with:
+          secret-key: ${{ secrets.AIKIDO_SECRET_KEY }}
+          fail-on-timeout: false
+          fail-on-dependency-scan: true
+          fail-on-sast-scan: true
+          fail-on-iac-scan: false
+          minimum-severity: 'CRITICAL'
+          timeout-seconds: 180
+          post-scan-status-comment: true
+          github-token: ${{ secrets.TOKEN }}
+
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog@v3.76.3
+        with:
+          extra_args: --only-verified
   codescanning:
     name: Code Scanning
     runs-on: namespace-profile-${{ inputs.runs-on }}
