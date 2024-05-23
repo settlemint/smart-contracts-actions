@@ -26,7 +26,7 @@ jobs:
   security:
     name: Security
     runs-on: namespace-profile-${{ inputs.runs-on }}
-    if: github.event_name == 'pull_request'
+    if: github.ref_name != 'main'
     steps:
       - name: Checkout
         uses: namespacelabs/nscloud-checkout-action@v2
@@ -120,11 +120,11 @@ jobs:
         id: test
 
       - name: Setup LCOV
-        if: github.event_name == 'pull_request'
+        if: github.ref_name != 'main'
         uses: hrishikesh-kadam/setup-lcov@v1
 
       - name: Run Forge Coverage
-        if: github.event_name == 'pull_request'
+        if: github.ref_name != 'main'
         run: |
           forge coverage --report lcov --report summary
         id: coverage
@@ -163,7 +163,7 @@ jobs:
           BTP_NODE_UNIQUE_NAME: anvil
 
       - name: Report code coverage
-        if: github.event_name == 'pull_request'
+        if: github.ref_name != 'main'
         uses: zgosalvez/github-actions-report-lcov@v4.1.8
         with:
           coverage-files: lcov.info
@@ -171,7 +171,7 @@ jobs:
           github-token: ${{ secrets.TOKEN }}
           update-comment: true
   docker:
-    if: github.event_name != 'pull_request'
+    if: github.ref_name != 'main'
     needs:
       - codescanning
       - security
