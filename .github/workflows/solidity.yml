@@ -65,7 +65,7 @@ jobs:
         image: ghcr.io/settlemint/btp-anvil-test-node:latest
         ports:
           - "8545:8545"
-    name: test
+    name: Test
     runs-on: namespace-profile-${{ inputs.runs-on }}
     steps:
       - name: Checkout
