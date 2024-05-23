@@ -25,7 +25,7 @@ env:
 jobs:
   security:
     name: Security
-    runs-on: namespace-profile-btp-lite
+    runs-on: namespace-profile-${{ inputs.runs-on }}
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
