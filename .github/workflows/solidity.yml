@@ -174,6 +174,7 @@ jobs:
     if: github.event_name != 'pull_request'
     needs:
       - codescanning
+      - security
       - test
     name: Docker
     runs-on: namespace-profile-${{ inputs.runs-on }}
