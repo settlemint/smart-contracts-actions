@@ -59,13 +59,13 @@ jobs:
         with:
           sarif_file: ${{ steps.slither.outputs.sarif }}
         if: always()
-  check:
+  test:
     services:
       foundry:
         image: ghcr.io/settlemint/btp-anvil-test-node:latest
         ports:
           - "8545:8545"
-    name: Check
+    name: test
     runs-on: namespace-profile-${{ inputs.runs-on }}
     steps:
       - name: Checkout
