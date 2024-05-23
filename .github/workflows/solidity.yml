@@ -173,8 +173,6 @@ jobs:
   docker:
     if: github.ref_name != 'main'
     needs:
-      - codescanning
-      - security
       - test
     name: Docker
     runs-on: namespace-profile-${{ inputs.runs-on }}
