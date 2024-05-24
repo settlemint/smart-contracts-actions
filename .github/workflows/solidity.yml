@@ -119,7 +119,7 @@ jobs:
 
       - name: Run Hardhat build
         run: |
-          npmx hardhat compile
+          npx hardhat compile
 
       - name: Run Forge tests
         run: |
@@ -127,7 +127,7 @@ jobs:
 
       - name: Run Hardhat test
         run: |
-          npmx hardhat test
+          npx hardhat test
 
       - name: Setup LCOV
         if: github.ref_name != 'main'
