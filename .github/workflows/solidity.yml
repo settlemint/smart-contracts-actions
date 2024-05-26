@@ -10,7 +10,7 @@ on:
         required: false
         type: string
         default: ubuntu-latest
-      ingition-module:
+      ignition-module:
         required: true
         type: string
       subgraph-contract-address-key:
@@ -117,7 +117,7 @@ jobs:
 
       - name: Deploy to the local node
         run: |
-          npx hardhat ignition deploy --network localhost ${{ inputs.ingition-module }}
+          npx hardhat ignition deploy --network localhost ${{ inputs.ignition-module }}
 
       - name: Install YQ
         uses: alexellis/arkade-get@master
