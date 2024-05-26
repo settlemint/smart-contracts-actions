@@ -86,6 +86,9 @@ jobs:
         with:
           node-version: 20
 
+      - name: Install Node dependencies
+        run: npm install
+
 
       - name: Run Forge build
         run: |
@@ -94,7 +97,6 @@ jobs:
 
       - name: Run Hardhat build
         run: |
-          npm install
           npx hardhat compile
 
       - name: Run Forge tests
