@@ -10,12 +10,14 @@ on:
         required: false
         type: string
         default: ubuntu-latest
+      ingition-module:
+        required: true
+        type: string
+      subgraph-contract-address-key:
+        required: true
+        type: string
     secrets:
       TOKEN:
-        required: true
-      ANVIL_TESTS_PRIVATE_KEY:
-        required: true
-      AIKIDO_SECRET_KEY:
         required: true
 
 env:
@@ -113,38 +115,27 @@ jobs:
           forge coverage --report lcov --report summary
         id: coverage
 
-      # - name: Run an anvil deployment
-      #   run: |
-      #     make deploy-anvil
-      #     cp deployment-anvil.txt deployment.txt
-      #   env:
-      #     ANVIL_TESTS_PRIVATE_KEY: ${{ secrets.ANVIL_TESTS_PRIVATE_KEY }}
+      - name: Deploy to the local node
+        run: |
+          npx hardhat ignition deploy --network localhost ${{ inputs.ingition-module }}
 
-      # - name: Check if subgraph folder exists
-      #   id: check_subgraph
-      #   run: echo "SUBGRAPH_EXISTS=$(if [ -d subgraph ]; then echo true; else echo false; fi)" >> $GITHUB_ENV
+      - name: Install YQ
+        uses: alexellis/arkade-get@master
+        with:
+          print-summary: false
+          yq: latest
 
-      # - name: Install npm dependencies for subgraph
-      #   if: env.SUBGRAPH_EXISTS == 'true'
-      #   working-directory: subgraph
-      #   run: |
-      #     npm install
+      - name: Configure the subgraph
+        run: |
+          DEPLOYED_ADDRESS=$(yq e '."${{ inputs.subgraph-contract-address-key }}"' ignition/deployments/chain-31337/deployed_addresses.json) yq -i e '.datasources[0].address = env(DEPLOYED_ADDRESS)' subgraph/subgraph.config.json
 
-      # - name: Install YQ
-      #   if: env.SUBGRAPH_EXISTS == 'true'
-      #   uses: alexellis/arkade-get@master
-      #   with:
-      #     print-summary: false
-      #     yq: latest
-
-      # - name: Build the subgraph
-      #   if: env.SUBGRAPH_EXISTS == 'true'
-      #   run: |
-      #     make subgraph
-      #   env:
-      #     ANVIL_TESTS_PRIVATE_KEY: ${{ secrets.ANVIL_TESTS_PRIVATE_KEY }}
-      #     BTP_RPC_URL: http://localhost:8545
-      #     BTP_NODE_UNIQUE_NAME: anvil
+      - name: Build the subgraph
+        run: |
+          npx graph-compiler --config subgraph/subgraph.config.json --include node_modules/@openzeppelin/subgraphs/src/datasources subgraph/datasources --export-schema --export-subgraph
+          yq -i e '.specVersion = "1.0.0"' generated/scs.subgraph.yaml
+          yq -i e '.features = ["nonFatalErrors", "fullTextSearch", "ipfsOnEthereumContracts"]' generated/scs.subgraph.yaml
+          npx graph codegen generated/scs.subgraph.yaml
+          npx graph build generated/scs.subgraph.yaml
 
       - name: Report code coverage
         if: github.ref_name != 'main'
