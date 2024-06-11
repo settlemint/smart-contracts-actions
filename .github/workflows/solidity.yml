@@ -130,6 +130,8 @@ jobs:
       - name: Configure the subgraph
         if: env.DISABLE_SUBGRAPH != 'true'
         run: |
+          echo lol
+          echo $DISABLE_SUBGRAPH
           DEPLOYED_ADDRESS=$(yq e '."${{ inputs.subgraph-contract-address-key }}"' ignition/deployments/chain-31337/deployed_addresses.json) yq -i e '.datasources[0].address = env(DEPLOYED_ADDRESS)' subgraph/subgraph.config.json
 
       - name: Build the subgraph
