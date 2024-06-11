@@ -128,15 +128,19 @@ jobs:
           yq: latest
 
       - name: Configure the subgraph
-        if: env.DISABLE_SUBGRAPH != 'true'
         run: |
-          echo lol
-          echo $DISABLE_SUBGRAPH
+          if [ ! -d "subgraph" ] || [ -z "$(ls -A subgraph)" ]; then
+            echo "Subgraph directory is missing or empty"
+            exit 0
+          fi
           DEPLOYED_ADDRESS=$(yq e '."${{ inputs.subgraph-contract-address-key }}"' ignition/deployments/chain-31337/deployed_addresses.json) yq -i e '.datasources[0].address = env(DEPLOYED_ADDRESS)' subgraph/subgraph.config.json
 
       - name: Build the subgraph
-        if: env.DISABLE_SUBGRAPH != 'true'
         run: |
+          if [ ! -d "subgraph" ] || [ -z "$(ls -A subgraph)" ]; then
+            echo "Subgraph directory is missing or empty"
+            exit 0
+          fi
           npx graph-compiler --config subgraph/subgraph.config.json --include node_modules/@openzeppelin/subgraphs/src/datasources subgraph/datasources --export-schema --export-subgraph
           yq -i e '.specVersion = "1.0.0"' generated/scs.subgraph.yaml
           yq -i e '.features = ["nonFatalErrors", "fullTextSearch", "ipfsOnEthereumContracts"]' generated/scs.subgraph.yaml
