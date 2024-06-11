@@ -61,7 +61,7 @@ jobs:
       - name: Upload findings to GitHub Advanced Security Dashboard
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: ${{ steps.slither.outputs.sarif }}
+          sarif_file: ${{ steps.slither.outputs.sarif }}  
         if: always()
   test:
     services:
@@ -128,10 +128,12 @@ jobs:
           yq: latest
 
       - name: Configure the subgraph
+        if: env.DISABLE_SUBGRAPH != 'true'
         run: |
           DEPLOYED_ADDRESS=$(yq e '."${{ inputs.subgraph-contract-address-key }}"' ignition/deployments/chain-31337/deployed_addresses.json) yq -i e '.datasources[0].address = env(DEPLOYED_ADDRESS)' subgraph/subgraph.config.json
 
       - name: Build the subgraph
+        if: env.DISABLE_SUBGRAPH != 'true'
         run: |
           npx graph-compiler --config subgraph/subgraph.config.json --include node_modules/@openzeppelin/subgraphs/src/datasources subgraph/datasources --export-schema --export-subgraph
           yq -i e '.specVersion = "1.0.0"' generated/scs.subgraph.yaml
