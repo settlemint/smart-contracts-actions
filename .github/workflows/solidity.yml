@@ -73,7 +73,7 @@ jobs:
     runs-on: namespace-profile-${{ inputs.runs-on }}
     steps:
       - name: Checkout
-        uses: namespacelabs/nscloud-checkout-action@v2
+        uses: namespacelabs/nscloud-checkout-action@v3
         with:
           submodules: recursive
 
@@ -162,7 +162,7 @@ jobs:
     runs-on: namespace-profile-${{ inputs.runs-on }}
     steps:
       - name: Checkout
-        uses: namespacelabs/nscloud-checkout-action@v2
+        uses: namespacelabs/nscloud-checkout-action@v3
         with:
           submodules: recursive
 
