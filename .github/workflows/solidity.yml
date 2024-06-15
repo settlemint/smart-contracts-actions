@@ -149,7 +149,7 @@ jobs:
 
       - name: Report code coverage
         if: github.ref_name != 'main'
-        uses: zgosalvez/github-actions-report-lcov@v4.1.8
+        uses: zgosalvez/github-actions-report-lcov@v4.1.10
         with:
           coverage-files: lcov.info
           minimum-coverage: 90
