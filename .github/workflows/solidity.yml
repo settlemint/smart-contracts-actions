@@ -37,8 +37,8 @@ jobs:
           submodules: recursive
       - name: Install canvas dependencies
         run: |
-          apt-get update
-          apt-get install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
+          apk update
+          apk add --no-cache libcairo2-dev jpeg-dev pango-dev giflib-dev build-base g++
 
       - name: Fetch semgrep rules
         uses: actions/checkout@v4
