@@ -38,7 +38,7 @@ jobs:
       - name: Install canvas dependencies
         run: |
           apk update
-          apk add --no-cache libcairo2-dev jpeg-dev pango-dev giflib-dev build-base g++
+          apk add --no-cache cairo-dev jpeg-dev pango-dev giflib-dev build-base g++
       - name: Fetch semgrep rules
         uses: actions/checkout@v4
         with:
